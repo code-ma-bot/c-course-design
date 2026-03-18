@@ -1,43 +1,46 @@
+#include <stdio.h>
 #include "salary.h"
 
+#define FILE_NAME "salary_records.dat"
+
 int main() {
-    Node *head = NULL; // 初始化空链表
+    Node *head = NULL;   // 动态链表头指针
     int choice;
 
-    while (1) {
+    /* 程序启动时先尝试读取历史数据 */
+    loadFromFile(&head, FILE_NAME);
+
+    do {
         menu();
-        if (scanf("%d", &choice) != 1) {
-            clearBuffer();
-            printf("输入无效，请输入数字！\n");
-            continue;
-        }
+        scanf("%d", &choice);
 
         switch (choice) {
             case 1:
-                head = inputSalary(head);
+                inputSalary(&head);
                 break;
             case 2:
-                printAll(head);
+                querySalary(head);
                 break;
             case 3:
-                modifySalary(head);
+                printAllRecords(head);
                 break;
             case 4:
-                adminStatistics(head);
+                saveToFile(head, FILE_NAME);
                 break;
             case 5:
-                employeeStatistics(head);
-                break;
-            case 6:
-                sortSalaryDescending(head);
+                loadFromFile(&head, FILE_NAME);
                 break;
             case 0:
-                printf("感谢使用工资管理系统，再见！\n");
-                // 此处可以补充释放链表内存的代码
-                return 0;
+                saveToFile(head, FILE_NAME);
+                printf("系统退出。\n");
+                break;
             default:
-                printf("无效选项，请重新选择！\n");
+                printf("输入无效，请重新选择。\n");
         }
-    }
+    } while (choice != 0);
+
+    /* 程序结束前释放链表内存 */
+    freeList(&head);
+
     return 0;
 }
