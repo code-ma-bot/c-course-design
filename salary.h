@@ -2,51 +2,88 @@
 #define SALARY_H
 
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 
-// 年月结构体
+/* =========================
+   年月结构体
+   用于表示某条工资所属的年月
+   ========================= */
 typedef struct {
     int year;
     int month;
 } YearMonth;
 
-// 工资记录结构体
+/* =========================
+   工资记录结构体
+   每个员工每个月对应一条工资记录
+   ========================= */
 typedef struct {
     int empId;                  // 员工编号
     char name[50];              // 员工姓名
-    char department[30];        // 部门 (新增)
-    char position[30];          // 职位 (新增)
     char city[30];              // 所在城市
     YearMonth ym;               // 工资所属年月
+
+    /* 原始工资项 */
     double basicSalary;         // 基本工资
     double performance;         // 绩效工资
-    double penalty;             // 奖罚金额 (正为奖，负为罚)
-    double socialSecurity;      // 社保扣除
-    double tax;                 // 个税扣除
-    double grossPay;            // 应发工资 (基本+绩效+奖罚)
-    double netPay;              // 实发工资 (应发-社保-个税)
+    double bonus;               // 奖金
+    double allowance;           // 补贴
+    double penalty;             // 奖惩（可正可负）
+
+    /* 计算结果 */
+    double grossPay;            // 应发工资
+
+    /* 社保公积金 */
+    double pension;             // 养老保险
+    double medical;             // 医疗保险
+    double unemployment;        // 失业保险
+    double housingFund;         // 住房公积金
+    double socialTotal;         // 社保公积金合计
+
+    /* 税后结果 */
+    double tax;                 // 个税
+    double netPay;              // 实发工资
 } SalaryRecord;
 
-// 链表节点定义
+/* =========================
+   链表结点结构体
+   动态链表每个结点存一条工资记录
+   ========================= */
 typedef struct Node {
-    SalaryRecord data;
-    struct Node *next;
+    SalaryRecord data;          // 当前结点保存的工资记录
+    struct Node *next;          // 指向下一个结点
 } Node;
 
-// ======== 函数声明 ========
-void menu();
-void clearBuffer();
-int sameMonth(YearMonth ym1, YearMonth ym2);
-void printSalaryRecord(SalaryRecord *record);
-void calculateSalary(Node *head, SalaryRecord *record, int calcSS, int calcTax);
 
-// 核心业务功能
-Node* inputSalary(Node *head);             // 1. 录入工资
-void printAll(Node *head);                 // 2. 打印所有记录
-void modifySalary(Node *head);             // 3. 调整员工工资 (管理员)
-void adminStatistics(Node *head);          // 4. 部门平均工资统计 (管理员)
-void employeeStatistics(Node *head);       // 5. 员工年度账单统计 (员工)
-void sortSalaryDescending(Node *head);     // 6. 按实发工资排序 (分析功能)
+/* ========== 工具函数 ========== */
+int sameMonth(YearMonth a, YearMonth b);
+int compareMonth(YearMonth a, YearMonth b);
+void clearBuffer();
+
+/* ========== 链表操作 ========== */
+Node* createNode(SalaryRecord r);
+void appendNode(Node **head, SalaryRecord r);
+int findRecord(Node *head, int empId, YearMonth ym, SalaryRecord *result);
+void printAllRecords(Node *head);
+void freeList(Node **head);
+
+/* ========== 工资计算核心 ========== */
+void calcSocialByCity(SalaryRecord *r);
+double getTaxRate(double taxable, double *quickDeduction);
+double calcCurrentMonthTax(Node *head, SalaryRecord *current);
+void calculateSalary(Node *head, SalaryRecord *r, int enableSocial, int enableTax);
+
+/* ========== 业务功能 ========== */
+void inputSalary(Node **head);
+void querySalary(Node *head);
+
+/* ========== 文件读写 ========== */
+void saveToFile(Node *head, const char *filename);
+void loadFromFile(Node **head, const char *filename);
+
+/* ========== 输出函数 ========== */
+void printSalaryRecord(const SalaryRecord *r);
+
+/* ========== 菜单函数 ========== */
+void menu();
 
 #endif
