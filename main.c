@@ -1,46 +1,43 @@
-#include <stdio.h>
 #include "salary.h"
 
-#define FILE_NAME "salary_records.dat"
-
 int main() {
-    Node *head = NULL;   // ¶¯Ì¬Á´±íÍ·Ö¸Õë
+    Node *head = NULL; // åˆå§‹åŒ–ç©ºé“¾è¡¨
     int choice;
 
-    /* ³ÌĞòÆô¶¯Ê±ÏÈ³¢ÊÔ¶ÁÈ¡ÀúÊ·Êı¾İ */
-    loadFromFile(&head, FILE_NAME);
-
-    do {
+    while (1) {
         menu();
-        scanf("%d", &choice);
+        if (scanf("%d", &choice) != 1) {
+            clearBuffer();
+            printf("è¾“å…¥æ— æ•ˆï¼Œè¯·è¾“å…¥æ•°å­—ï¼\n");
+            continue;
+        }
 
         switch (choice) {
             case 1:
-                inputSalary(&head);
+                head = inputSalary(head);
                 break;
             case 2:
-                querySalary(head);
+                printAll(head);
                 break;
             case 3:
-                printAllRecords(head);
+                modifySalary(head);
                 break;
             case 4:
-                saveToFile(head, FILE_NAME);
+                adminStatistics(head);
                 break;
             case 5:
-                loadFromFile(&head, FILE_NAME);
+                employeeStatistics(head);
+                break;
+            case 6:
+                sortSalaryDescending(head);
                 break;
             case 0:
-                saveToFile(head, FILE_NAME);
-                printf("ÏµÍ³ÍË³ö¡£\n");
-                break;
+                printf("æ„Ÿè°¢ä½¿ç”¨å·¥èµ„ç®¡ç†ç³»ç»Ÿï¼Œå†è§ï¼\n");
+                // æ­¤å¤„å¯ä»¥è¡¥å……é‡Šæ”¾é“¾è¡¨å†…å­˜çš„ä»£ç 
+                return 0;
             default:
-                printf("ÊäÈëÎŞĞ§£¬ÇëÖØĞÂÑ¡Ôñ¡£\n");
+                printf("æ— æ•ˆé€‰é¡¹ï¼Œè¯·é‡æ–°é€‰æ‹©ï¼\n");
         }
-    } while (choice != 0);
-
-    /* ³ÌĞò½áÊøÇ°ÊÍ·ÅÁ´±íÄÚ´æ */
-    freeList(&head);
-
+    }
     return 0;
 }
