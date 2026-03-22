@@ -1,46 +1,124 @@
+#include "system.h"
 #include <stdio.h>
-#include "salary.h"
+#include <stdlib.h>
 
-#define FILE_NAME "salary_records.dat"
+// È«¾ÖÁ´±íÍ·¶¨Òå
+Department *dept_head = NULL;
+Position *pos_head = NULL;
+Employee *emp_head = NULL;
+Transfer *trans_head = NULL;
+Salary *salary_head = NULL;
+
+void load_all_data() {
+    printf("Êı¾İ¼ÓÔØ¹¦ÄÜ´ıÊµÏÖ£¨ÓÉ×é³¤Íê³É£©\n");
+}
+
+void save_all_data() {
+    printf("Êı¾İ±£´æ¹¦ÄÜ´ıÊµÏÖ£¨ÓÉ×é³¤Íê³É£©\n");
+}
+
+void clear_screen() {
+    #ifdef _WIN32
+        system("cls");
+    #else
+        system("clear");
+    #endif
+}
+
+void press_any_key() {
+    printf("\n°´»Ø³µ¼ü¼ÌĞø...");
+    while (getchar() != '\n');
+    getchar();
+}
 
 int main() {
-    Node *head = NULL;   // åŠ¨æ€é“¾è¡¨å¤´æŒ‡é’ˆ
+    load_all_data();
+
     int choice;
-
-    /* ç¨‹åºå¯åŠ¨æ—¶å…ˆå°è¯•è¯»å–å†å²æ•°æ® */
-    loadFromFile(&head, FILE_NAME);
-
     do {
-        menu();
+        clear_screen();
+        printf("\n========== ¹¤×Ê¹ÜÀíÏµÍ³ ==========\n");
+        printf("1. Ô±¹¤²éÑ¯\n");
+        printf("2. ²¿ÃÅ²éÑ¯\n");
+        printf("3. Ö°Î»²éÑ¯\n");
+        printf("4. µ÷¶¯¼ÇÂ¼²éÑ¯\n");
+        printf("5. ¹¤×Ê¼ÇÂ¼²éÑ¯\n");
+        printf("6. Ô±¹¤ÅÅĞò£¨°´ĞÕÃû£©\n");
+        printf("7. Í³¼Æ²¿ÃÅÈËÊı\n");
+        printf("8. ĞŞ¸ÄÃÜÂë\n");
+        printf("9. Êı¾İ±¸·İ\n");
+        printf("0. ÍË³ö\n");
+        printf("ÇëÑ¡Ôñ£º");
         scanf("%d", &choice);
+        getchar(); // ÎüÊÕ»Ø³µ
+
+        char keyword[50];
+        int uid;
 
         switch (choice) {
             case 1:
-                inputSalary(&head);
+                printf("ÇëÊäÈëÔ±¹¤ĞÕÃû¹Ø¼ü×Ö£º");
+                fgets(keyword, sizeof(keyword), stdin);
+                keyword[strcspn(keyword, "\n")] = '\0';
+                search_employee(keyword);
+                press_any_key();
                 break;
             case 2:
-                querySalary(head);
+                printf("ÇëÊäÈë²¿ÃÅÃû³Æ¹Ø¼ü×Ö£º");
+                fgets(keyword, sizeof(keyword), stdin);
+                keyword[strcspn(keyword, "\n")] = '\0';
+                search_department(keyword);
+                press_any_key();
                 break;
             case 3:
-                printAllRecords(head);
+                printf("ÇëÊäÈëÖ°Î»Ãû³Æ¹Ø¼ü×Ö£º");
+                fgets(keyword, sizeof(keyword), stdin);
+                keyword[strcspn(keyword, "\n")] = '\0';
+                search_position(keyword);
+                press_any_key();
                 break;
             case 4:
-                saveToFile(head, FILE_NAME);
+                printf("ÇëÊäÈëÔ±¹¤ĞÕÃû¹Ø¼ü×Ö£º");
+                fgets(keyword, sizeof(keyword), stdin);
+                keyword[strcspn(keyword, "\n")] = '\0';
+                search_transfer(keyword);
+                press_any_key();
                 break;
             case 5:
-                loadFromFile(&head, FILE_NAME);
+                printf("ÇëÊäÈëÔ±¹¤ĞÕÃû¹Ø¼ü×Ö£º");
+                fgets(keyword, sizeof(keyword), stdin);
+                keyword[strcspn(keyword, "\n")] = '\0';
+                search_salary(keyword);
+                press_any_key();
+                break;
+            case 6:
+                sort_employee_by_name();
+                press_any_key();
+                break;
+            case 7:
+                stat_dept_employee_count();
+                press_any_key();
+                break;
+            case 8:
+                printf("ÇëÊäÈëÓÃ»§ID£º");
+                scanf("%d", &uid);
+                getchar();
+                change_password(uid, 0);
+                press_any_key();
+                break;
+            case 9:
+                backup_data();
+                press_any_key();
                 break;
             case 0:
-                saveToFile(head, FILE_NAME);
-                printf("ç³»ç»Ÿé€€å‡ºã€‚\n");
+                save_all_data();
+                printf("Ğ»Ğ»Ê¹ÓÃ£¡\n");
                 break;
             default:
-                printf("è¾“å…¥æ— æ•ˆï¼Œè¯·é‡æ–°é€‰æ‹©ã€‚\n");
+                printf("ÊäÈë´íÎó£¬ÇëÖØĞÂÑ¡Ôñ£¡\n");
+                press_any_key();
         }
     } while (choice != 0);
-
-    /* ç¨‹åºç»“æŸå‰é‡Šæ”¾é“¾è¡¨å†…å­˜ */
-    freeList(&head);
 
     return 0;
 }
